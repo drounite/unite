@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -12,18 +13,36 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.params.HttpParams;
 
+import android.os.AsyncTask;
+
 public class Response {
 	
-	HttpResponse response;
+	private String errorMsg;
+	
+	private HttpClient client;
+	private HttpUriRequest request;
+	private HttpResponse response;
+	
+	private AsyncTask<Void, Void, String> makeRequest;
 
-	public Response(HttpClient client, HttpUriRequest request) {
+	public Response(HttpClient client, HttpUriRequest request, String errorMsg) {
+		this.client = client;
+		this.request = request;
+		this.errorMsg = errorMsg;
+		
+		makeRequest = new MakeRequest().execute();
+	}
+	
+	public String getContent() {
 		try {
-			response = client.execute(request);
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			return makeRequest.get();
+		} catch (InterruptedException e) {
+			setErrorMsg(e.getMessage());
+		} catch (ExecutionException e) {
+			setErrorMsg(e.getMessage());
 		}
+		
+		return errorMsg;
 	}
 	
 	public int getStatusCode() {
@@ -42,7 +61,7 @@ public class Response {
 		return response.getParams();
 	}
 	
-	public String getContent() {
+	private String getResponseContent() {
 		String content = "";
 		
 		try {
@@ -50,9 +69,9 @@ public class Response {
 			content = streamToString(instream);
             instream.close();
 		} catch (IllegalStateException e) {
-			e.printStackTrace();
+			setErrorMsg(e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			setErrorMsg(e.getMessage());
 		}
 		
 		return content;
@@ -60,6 +79,10 @@ public class Response {
 	
 	public long getContentLength() {
 		return response.getEntity().getContentLength();
+	}
+	
+	public String getErrorMsg() {
+		return errorMsg;
 	}
 	
 	private String streamToString(InputStream is) {
@@ -73,14 +96,38 @@ public class Response {
 	            sb.append(line + "\n");
 	        }
 	    } catch (IOException e) {
-	        e.printStackTrace();
+	    	setErrorMsg(e.getMessage());
 	    } finally {
 	        try {
 	            is.close();
 	        } catch (IOException e) {
-	            e.printStackTrace();
+	        	setErrorMsg(e.getMessage());
 	        }
 	    }
 	    return sb.toString();
+	}
+	
+	private class MakeRequest extends AsyncTask<Void, Void, String> {
+		
+		@Override
+		protected String doInBackground(Void... params) {
+
+			String responseContent = "";
+			
+			try {
+				response = client.execute(request);
+				responseContent = getResponseContent();
+			} catch (ClientProtocolException e) {
+				setErrorMsg(e.getMessage());
+			} catch (IOException e) {
+				setErrorMsg(e.getMessage());
+			}
+			
+			return responseContent;
+		}
+	}
+	
+	private void setErrorMsg(String msg) {
+		errorMsg = msg;
 	}
 }

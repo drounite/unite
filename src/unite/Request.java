@@ -20,6 +20,8 @@ import android.util.Log;
 
 public class Request {
 	
+	private String errorMsg;
+	
 	private HttpClient client;
 	private HttpUriRequest request;
 	private List<NameValuePair> params;
@@ -28,6 +30,8 @@ public class Request {
 		this.client = client;
 		this.request = request;
 		params = new ArrayList<NameValuePair>();
+		
+		this.errorMsg = "Chill, everything okay.";
 	}
 	
 	public Header[] getHeaders() {
@@ -89,8 +93,8 @@ public class Request {
 	}
 	
 	public Request setScheme(String scheme) {
-		String uri = buildUri(scheme, getUserInfo(), getHost(), getPort(),
-				getPath(), getQuery());
+//		String uri = buildUri(scheme, getUserInfo(), getHost(), getPort(),
+//				getPath(), getQuery());
 //		setUri(uri);
 		return this;
 	}
@@ -149,18 +153,26 @@ public class Request {
 		return this;
 	}
 	
-	public Response send() throws UnsupportedEncodingException {
-		bindParams();
-		return new Response(client, request);
+	public String getErrorMsg() {
+		return errorMsg;
 	}
 	
-	private void bindParams() throws UnsupportedEncodingException {
+	public Response send() {
+		bindParams();
+		return new Response(client, request, errorMsg);
+	}
+	
+	private void bindParams() {
 		String method = getMethod();
 
-		if (method.equals("POST")) {
-			((HttpPost) request).setEntity(new UrlEncodedFormEntity(params));
-		} else if (method.equals("PUT")) {
-			((HttpPut) request).setEntity(new UrlEncodedFormEntity(params));
+		try {
+			if (method.equals("POST")) {
+					((HttpPost) request).setEntity(new UrlEncodedFormEntity(params));
+			} else if (method.equals("PUT")) {
+				((HttpPut) request).setEntity(new UrlEncodedFormEntity(params));
+			}
+		} catch (UnsupportedEncodingException e) {
+			setErrorMsg(e.getMessage());
 		}
 	}
 	
@@ -180,5 +192,9 @@ public class Request {
 		.path(path)
 		.query(query)
 		.build();
+	}
+	
+	private void setErrorMsg(String msg) {
+		errorMsg = msg;
 	}
 }
