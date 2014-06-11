@@ -13,7 +13,7 @@
 
 # generated files
 gen/
-bin/
+bin/*
 
 # Local configuration file (sdk path, etc)
 local.properties
