@@ -1,3 +1,6 @@
+!.gitignore
+!bin/unite.jar
+
 # built application files
 *.apk
 *.ap_
@@ -27,6 +30,3 @@ proguard/
 *.ipr
 *.iws
 .idea/
-
-!.gitignore
-!bin/unite.jar
