@@ -26,12 +26,31 @@ public class Request {
 	private HttpUriRequest request;
 	private List<NameValuePair> params;
 	
+	private OnResponseListener listener;
+	
 	public Request(HttpClient client, HttpUriRequest request) {
 		this.client = client;
 		this.request = request;
+		this.listener = null;
+		
 		params = new ArrayList<NameValuePair>();
 		
 		this.errorMsg = "Chill, everything okay.";
+	}
+	
+	public Request(HttpClient client, HttpUriRequest request, OnResponseListener listener) {
+		this.client = client;
+		this.request = request;
+		this.listener = listener;
+		
+		params = new ArrayList<NameValuePair>();
+		
+		this.errorMsg = "Chill, everything okay.";
+	}
+	
+	public Request setOnResponseListener(OnResponseListener listener) {
+		this.listener = listener;
+		return this;
 	}
 	
 	public Header[] getHeaders() {
@@ -159,7 +178,12 @@ public class Request {
 	
 	public Response send() {
 		bindParams();
-		return new Response(client, request, errorMsg);
+		return new Response(client, request, errorMsg, listener);
+	}
+	
+	public Response send(OnResponseListener listener) {
+		bindParams();
+		return new Response(client, request, errorMsg, listener);
 	}
 	
 	private void bindParams() {

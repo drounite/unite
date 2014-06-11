@@ -25,12 +25,20 @@ public class Client {
 		return getRequest(new HttpHead(uri));
 	}
 	
+	public Request head(String uri, OnResponseListener listener) {
+		return getRequest(new HttpHead(uri), listener);
+	}
+	
 	public Request get() {
 		return getRequest(new HttpGet());
 	}
 	
 	public Request get(String uri) {
 		return getRequest(new HttpGet(uri));
+	}
+	
+	public Request get(String uri, OnResponseListener listener) {
+		return getRequest(new HttpGet(uri), listener);
 	}
 	
 	public Request post() {
@@ -41,12 +49,20 @@ public class Client {
 		return getRequest(new HttpPost(uri));
 	}
 	
+	public Request post(String uri, OnResponseListener listener) {
+		return getRequest(new HttpPost(uri), listener);
+	}
+	
 	public Request put() {
 		return getRequest(new HttpPut());
 	}
 	
 	public Request put(String uri) {
 		return getRequest(new HttpPut(uri));
+	}
+	
+	public Request put(String uri, OnResponseListener listener) {
+		return getRequest(new HttpPut(uri), listener);
 	}
 	
 	public Request delete() {
@@ -57,7 +73,16 @@ public class Client {
 		return getRequest(new HttpDelete(uri));
 	}
 	
+	public Request delete(String uri, OnResponseListener listener) {
+		return getRequest(new HttpDelete(uri), listener);
+	}
+	
 	private Request getRequest(HttpUriRequest httpUriRequest) {
 		return new Request(client, httpUriRequest);
+	}
+	
+	private Request getRequest(HttpUriRequest httpUriRequest,
+			OnResponseListener listener) {
+		return new Request(client, httpUriRequest, listener);
 	}
 }

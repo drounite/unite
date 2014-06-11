@@ -25,14 +25,19 @@ public class Response {
 	
 	private AsyncTask<Void, Void, String> makeRequest;
 
-	public Response(HttpClient client, HttpUriRequest request, String errorMsg) {
+	public Response(HttpClient client, HttpUriRequest request, String errorMsg, OnResponseListener listener) {
 		this.client = client;
 		this.request = request;
 		this.errorMsg = errorMsg;
 		
-		makeRequest = new MakeRequest().execute();
+		makeRequest = new MakeRequest(listener).execute();
 	}
 	
+	/**
+	 * Waits if necessary for the computation to complete, and then retrieves its result.
+	 * 
+	 * @return String The response content
+	 */
 	public String getContent() {
 		try {
 			return makeRequest.get();
@@ -59,6 +64,14 @@ public class Response {
 	
 	public HttpParams getParams() {
 		return response.getParams();
+	}	
+	
+	public long getContentLength() {
+		return response.getEntity().getContentLength();
+	}
+	
+	public String getErrorMsg() {
+		return errorMsg;
 	}
 	
 	private String getResponseContent() {
@@ -75,14 +88,6 @@ public class Response {
 		}
 		
 		return content;
-	}
-	
-	public long getContentLength() {
-		return response.getEntity().getContentLength();
-	}
-	
-	public String getErrorMsg() {
-		return errorMsg;
 	}
 	
 	private String streamToString(InputStream is) {
@@ -109,6 +114,12 @@ public class Response {
 	
 	private class MakeRequest extends AsyncTask<Void, Void, String> {
 		
+		private OnResponseListener listener;
+		
+		public MakeRequest(OnResponseListener listener) {
+			this.listener = listener;
+		}
+		
 		@Override
 		protected String doInBackground(Void... params) {
 
@@ -124,6 +135,14 @@ public class Response {
 			}
 			
 			return responseContent;
+		}
+		
+		@Override
+		protected void onPostExecute(String result) {
+			super.onPostExecute(result);
+			if (listener != null) {
+				listener.onResponseReceived(Response.this);
+			}
 		}
 	}
 	
