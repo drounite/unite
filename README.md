@@ -1,4 +1,4 @@
 unite
 =====
 
-[a link](https://github.com/drounite/unite/blob/master/bin/unite.jar)
+[unite.jar](https://github.com/drounite/unite/raw/master/bin/unite.jar)
