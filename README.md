@@ -57,7 +57,7 @@ protected void onCreate(Bundle savedInstanceState) {
 	setContentView(R.layout.main);
 	
 	Client client = new Client()
-		.get('http://www.example.com')
+		.get("http://www.example.com")
 		.setOnResponseListener(this)
 		.send();
 }
