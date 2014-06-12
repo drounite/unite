@@ -1,7 +1,8 @@
 unite
 =====
 
-Unite is an open-source HTTP request library for Android,<br>built to significantly facilitate the work and coding time, and makes it easy to create and work with HTTP requests.
+Unite is an open-source HTTP request library for Android,<br>
+built to significantly facilitate the work and coding time, and makes it easy to create and work with HTTP requests.
 
 ###Importing the Unite library into project
 
@@ -40,7 +41,7 @@ public class MainActivity extends Activity implements OnResponseListener {
 }
 ```
 
-Using Unite HTTP library is pretty simple and straightforward.
+Using Unite HTTP library is pretty simple and straightforward.<br>
 Start by creating Unite Client instance and work your way from there:
 ```java
 .
