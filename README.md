@@ -1,6 +1,6 @@
 unite
 =====
-Unite is an open-source HTTP request library for Android,<br>
+<br>Unite is an open-source HTTP request library for Android,<br>
 built to significantly facilitate the work and coding time, and makes it easy to create and work with HTTP requests.
 
 ====
