@@ -25,7 +25,6 @@ There are two ways for you to import the library into your Android project:
 ###Usage
 
 Unite contains Interface definition for a callback to be invoked when HTTP Response is received. So just implement ```OnResponseListener``` and add the unimplemented method ```onResponseReceived```:
-
 ```java
 public class MainActivity extends Activity implements OnResponseListener {
   
@@ -42,7 +41,6 @@ public class MainActivity extends Activity implements OnResponseListener {
 ```
 
 Create a Unite Client instance:
-
 ```java
 Client client = new Client();
 ```
