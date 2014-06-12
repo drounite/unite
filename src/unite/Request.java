@@ -16,8 +16,6 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicNameValuePair;
 
-import android.util.Log;
-
 public class Request {
 	
 	private String errorMsg;
@@ -32,20 +30,18 @@ public class Request {
 		this.client = client;
 		this.request = request;
 		this.listener = null;
+		this.errorMsg = null;
 		
 		params = new ArrayList<NameValuePair>();
-		
-		this.errorMsg = "Chill, everything okay.";
 	}
 	
 	public Request(HttpClient client, HttpUriRequest request, OnResponseListener listener) {
 		this.client = client;
 		this.request = request;
 		this.listener = listener;
+		this.errorMsg = null;
 		
 		params = new ArrayList<NameValuePair>();
-		
-		this.errorMsg = "Chill, everything okay.";
 	}
 	
 	public Request setOnResponseListener(OnResponseListener listener) {
@@ -94,95 +90,34 @@ public class Request {
 		return this;
 	}
 	
-	public String getUri() {
-		return request.getURI().toString();
-	}
-	
 	public Request setUri(String uri) {
 		try {
 			((HttpRequestBase) request).setURI(new URI(uri));
 		} catch (URISyntaxException e) {
-			Log.e("Unite-Request", e.getMessage());
+			setErrorMsg(e.getMessage());
 		}
 		return this;
 	}
 	
-	public String getScheme() {
-		return request.getURI().getScheme();
-	}
-	
-	public Request setScheme(String scheme) {
-//		String uri = buildUri(scheme, getUserInfo(), getHost(), getPort(),
-//				getPath(), getQuery());
-//		setUri(uri);
-		return this;
-	}
-	
-	public String getAuthority() {
-		return request.getURI().getAuthority();
-	}
-	
-	public String getUserInfo() {
-		return request.getURI().getUserInfo();
-	}
-	
-	public Request setUserInfo(String username, String password) {
-		setUri(buildUri(getScheme(), username + ":" + password, getHost(),
-				getPort(), getPath(), getQuery()));
-		return this;
-	}
-	
-	public String getHost() {
-		return request.getURI().getHost();
-	}
-	
-	public Request setHost(String host) {
-		setUri(buildUri(getScheme(), getUserInfo(), host, getPort(), getPath(),
-				getQuery()));
-		return this;
-	}
-	
-	public int getPort() {
-		return request.getURI().getPort();
-	}
-	
-	public Request setPort(int port) {
-		setUri(buildUri(getScheme(), getUserInfo(), getHost(), port, getPath(),
-				getQuery()));
-		return this;
-	}
-	
-	public String getPath() {
-		return request.getURI().getPath();
-	}
-	
-	public Request setPath(String path) {
-		setUri(buildUri(getScheme(), getUserInfo(), getHost(), getPort(), path,
-				getQuery()));
-		return this;
-	}
-	
-	public String getQuery() {
-		return request.getURI().getQuery();
-	}
-	
-	public Request setQuery(String query) {
-		setUri(buildUri(getScheme(), getUserInfo(), getHost(), getPort(), getPath(),
-				query));
-		return this;
-	}
-	
 	public String getErrorMsg() {
-		return errorMsg;
+		return errorMsg != null ? errorMsg : "Chill, everything okay.";
 	}
 	
 	public Response send() {
-		bindParams();
+		try {
+			bindParams();
+		} catch (NullPointerException e) {
+			setErrorMsg(e.getMessage());
+		}
 		return new Response(client, request, errorMsg, listener);
 	}
 	
 	public Response send(OnResponseListener listener) {
-		bindParams();
+		try {
+			bindParams();
+		} catch (NullPointerException e) {
+			setErrorMsg(e.getMessage());
+		}
 		return new Response(client, request, errorMsg, listener);
 	}
 	
@@ -198,24 +133,6 @@ public class Request {
 		} catch (UnsupportedEncodingException e) {
 			setErrorMsg(e.getMessage());
 		}
-	}
-	
-	private String buildUri(
-			String scheme,
-			String userInfo,
-			String host,
-			int port,
-			String path,
-			String query
-			) {
-		return new UriBuilder()
-		.scheme(scheme)
-		.userInfo(userInfo)
-		.host(host)
-		.port(port)
-		.path(path)
-		.query(query)
-		.build();
 	}
 	
 	private void setErrorMsg(String msg) {

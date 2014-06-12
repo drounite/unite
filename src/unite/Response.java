@@ -11,6 +11,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
 import android.os.AsyncTask;
@@ -51,27 +52,27 @@ public class Response {
 	}
 	
 	public int getStatusCode() {
-		return response.getStatusLine().getStatusCode();
+		return errorMsg == null ? response.getStatusLine().getStatusCode() : -1;
 	}
 	
 	public Header[] getHeaders() {
-		return response.getAllHeaders();
+		return errorMsg == null ? response.getAllHeaders() : new Header[0];
 	}
 	
 	public Header[] getHeaders(String name) {
-		return response.getHeaders(name);
+		return errorMsg == null ? response.getHeaders(name) : new Header[0];
 	}
 	
 	public HttpParams getParams() {
-		return response.getParams();
+		return errorMsg == null ? response.getParams() : new BasicHttpParams();
 	}	
 	
 	public long getContentLength() {
-		return response.getEntity().getContentLength();
+		return errorMsg == null ? response.getEntity().getContentLength() : 0;
 	}
 	
 	public String getErrorMsg() {
-		return errorMsg;
+		return errorMsg != null ? errorMsg : "Chill, everything okay.";
 	}
 	
 	private String getResponseContent() {
@@ -126,6 +127,10 @@ public class Response {
 			String responseContent = "";
 			
 			try {
+				if (request.getURI() == null) {
+					setErrorMsg("Uri is empty");
+					return null;
+				}
 				response = client.execute(request);
 				responseContent = getResponseContent();
 			} catch (ClientProtocolException e) {
