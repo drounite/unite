@@ -14,7 +14,8 @@ There are two ways for you to import the library into your Android project:
 #### The Library Project way
 1. Download and unzip [unite library project](https://github.com/drounite/unite/archive/master.zip)
 2. Go to your Android project and slect File > New > Other
-3. Select Android > "Android Project from existing source" and click "Next" button
+3. Select Android > Android Project from existing source
+4. Click "Next" button
 5. Click "Browse..." button and navigate to unzipped Unite project
 6. Click Finish (Now Unite project is in your workspace)
 7. Right-click on your project > Properties
