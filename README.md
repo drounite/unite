@@ -3,6 +3,7 @@ unite
 
 Unite is an open-source HTTP request library for Android,<br>
 built to significantly facilitate the work and coding time, and makes it easy to create and work with HTTP requests.
+====
 
 ### Importing the Unite library into project
 
@@ -22,6 +23,8 @@ There are two ways for you to import the library into your Android project:
 7. Right-click on your project > Properties
 8. In Android > Library section click Add
 9. select recently added Unite project > Ok
+
+====
 
 ### Usage
 
@@ -71,6 +74,8 @@ public void onResponseReceived(Response response) {
 	Log.i("onResponseReceived", "Error: " + response.getErrorMsg());
 }
 ```
+
+====
 
 #### Again, Unite is open-source! This library was created to assist us, in the whole process of creating HTTP client, in out Android Aplications.<br>Please help us make it better! You are encouraged to fork this project and send us pull requests.
 #### Enjoy.
