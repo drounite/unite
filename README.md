@@ -77,6 +77,7 @@ public void onResponseReceived(Response response) {
 
 ====
 
+<br>
 #### Again, Unite is open-source! This library was created to assist us, in the whole process of creating HTTP client, in our Android Applications.<br>Please help us make it better! You are encouraged to fork this project and send us pull requests.
 #### Enjoy.
 
