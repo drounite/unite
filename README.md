@@ -45,6 +45,7 @@ public class MainActivity extends Activity implements OnResponseListener {
 ```
 
 Using Unite HTTP library is pretty simple and straightforward.<br>
+By default all the HTTP requests in Unite works asynchronously, so you don’t have to worry about using asynctask anymore.<br>
 Start by creating Unite Client instance and work your way from there:
 ```java
 .
