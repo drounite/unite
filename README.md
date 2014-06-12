@@ -5,7 +5,7 @@ Unite is an open-source HTTP request library for Android,<br>built to significan
 
 ###Importing into project
 
-There are two options for you to import the library into your Android project:
+There are two ways for you to import the library into your Android project:
 #### The JAR file way
 1. Create a folder called ```libs``` (if not already exists) in your project's root folder.
 2. Copy [unite.jar](https://github.com/drounite/unite/raw/master/bin/unite.jar) to the libs folder.
@@ -20,3 +20,28 @@ There are two options for you to import the library into your Android project:
 7. Right-click on your project > Properties
 8. In Android > Library section click Add
 9. select recently added Unite project > Ok
+
+###Usage
+
+Unite contains Interface definition for a callback to be invoked when HTTP Response is received. So just implement ```OnResponseListener``` and add the unimplemented method ```onResponseReceived```:
+
+```java
+public class MainActivity extends Activity implements OnResponseListener {
+  
+  .
+  .
+  .
+  
+  @Override
+	public void onResponseReceived(Response response) {
+		// Handle your response here
+  }
+  
+}
+```
+
+Create a Unite Client instance:
+
+```java
+Client client = new Client();
+```
