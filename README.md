@@ -40,7 +40,33 @@ public class MainActivity extends Activity implements OnResponseListener {
 }
 ```
 
-Create a Unite Client instance:
+Using Unite HTTP library is pretty simple and straightforward.
+Start by creating Unite Client instance and work your way from there:
 ```java
-Client client = new Client();
+.
+.
+.
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	setContentView(R.layout.main);
+	
+	Client client = new Client()
+		.get('http://www.example.com')
+		.setOnResponseListener(this)
+		.send();
+}
+
+.
+.
+.
+
+@Override
+public void onResponseReceived(Response response) {
+	Log.i("onResponseReceived", "Status code: " + response.getStatusCode());
+	Log.i("onResponseReceived", "Content length: " + response.getContentLength());
+	Log.i("onResponseReceived", "Content: " + response.getContent());
+	Log.i("onResponseReceived", "Error: " + response.getErrorMsg());
+}
 ```
