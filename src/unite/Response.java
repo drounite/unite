@@ -28,7 +28,8 @@ public class Response {
 	
 	private AsyncTask<Void, Void, String> makeRequest;
 
-	public Response(HttpClient client, HttpUriRequest request, String errorMsg, OnResponseListener listener) {
+	public Response(HttpClient client, HttpUriRequest request, String errorMsg,
+			OnResponseListener listener) {
 		this.client = client;
 		this.request = request;
 		this.errorMsg = errorMsg;
@@ -37,11 +38,12 @@ public class Response {
 	}
 	
 	/**
-	 * Waits if necessary for the computation to complete, and then retrieves its result.
+	 * Waits if necessary for the computation to complete,
+	 * and then retrieves its result.
 	 * 
 	 * @return String The response content
 	 */
-	public String getContent() {
+	public String getBody() {
 		try {
 			return makeRequest.get();
 		} catch (InterruptedException e) {
@@ -53,9 +55,12 @@ public class Response {
 		return errorMsg;
 	}
 	
-	public JSONObject getJsonContent() {
+	public JSONObject getJsonBody() {
+		String body = getBody();
+		String jsonString = body.substring(body.indexOf("{"),
+				body.lastIndexOf("}") + 1);
 		try {
-			return new JSONObject(getContent());
+			return new JSONObject(jsonString);
 		} catch (JSONException e) {
 			setErrorMsg(e.getMessage());
 		}
@@ -64,30 +69,36 @@ public class Response {
 	}
 	
 	public int getStatusCode() {
-		return errorMsg == null ? response.getStatusLine().getStatusCode() : -1;
+		return errorMsg == null ? 
+				response.getStatusLine().getStatusCode() : -1;
 	}
 	
 	public Header[] getHeaders() {
-		return errorMsg == null ? response.getAllHeaders() : new Header[0];
+		return errorMsg == null ? 
+				response.getAllHeaders() : new Header[0];
 	}
 	
 	public Header[] getHeaders(String name) {
-		return errorMsg == null ? response.getHeaders(name) : new Header[0];
+		return errorMsg == null ? 
+				response.getHeaders(name) : new Header[0];
 	}
 	
 	public HttpParams getParams() {
-		return errorMsg == null ? response.getParams() : new BasicHttpParams();
+		return errorMsg == null ? 
+				response.getParams() : new BasicHttpParams();
 	}	
 	
 	public long getContentLength() {
-		return errorMsg == null ? response.getEntity().getContentLength() : 0;
+		return errorMsg == null ? 
+				response.getEntity().getContentLength() : 0;
 	}
 	
 	public String getErrorMsg() {
-		return errorMsg != null ? errorMsg : "Chill, everything okay.";
+		return errorMsg != null ? 
+				errorMsg : "Chill, everything okay.";
 	}
 	
-	private String getResponseContent() {
+	private String getResponseBody() {
 		String content = "";
 		
 		try {
@@ -144,7 +155,7 @@ public class Response {
 					return null;
 				}
 				response = client.execute(request);
-				responseContent = getResponseContent();
+				responseContent = getResponseBody();
 			} catch (ClientProtocolException e) {
 				setErrorMsg(e.getMessage());
 			} catch (IOException e) {

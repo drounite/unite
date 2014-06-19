@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -27,6 +28,7 @@ public class Request {
 	private HttpClient client;
 	private HttpUriRequest request;
 	private List<NameValuePair> params;
+	private String body;
 	
 	private OnResponseListener listener;
 	
@@ -94,6 +96,11 @@ public class Request {
 		return this;
 	}
 	
+	public Request setBody(String body) {
+		this.body = body;
+		return this;
+	}
+	
 	public Request setUri(String uri) {
 		try {
 			((HttpRequestBase) request).setURI(new URI(uri));
@@ -108,35 +115,59 @@ public class Request {
 	}
 	
 	public Response send() {
-		try {
-			bindParams();
-		} catch (NullPointerException e) {
-			setErrorMsg(e.getMessage());
-		}
+		prepareEntity();
 		return new Response(client, request, errorMsg, listener);
 	}
 	
 	public Response send(OnResponseListener listener) {
+		prepareEntity();
+		return new Response(client, request, errorMsg, listener);
+	}
+	
+	private void prepareEntity() {
 		try {
 			bindParams();
+			bindBody();
 		} catch (NullPointerException e) {
 			setErrorMsg(e.getMessage());
 		}
-		return new Response(client, request, errorMsg, listener);
 	}
 	
 	private void bindParams() {
 		String method = getMethod();
 		
 		try {
+			HttpEntity httpEntity;
+			if (contentTypeIsJson()) {
+				httpEntity = new StringEntity(paramsToJsonString());
+			} else {
+				httpEntity = new UrlEncodedFormEntity(params);
+			}
+			
 			if (method.equals("POST")) {
-				if (contentTypeIsJson()) {
-					((HttpPost) request).setEntity(new StringEntity(paramsToJsonString()));
-				} else {
-					((HttpPost) request).setEntity(new UrlEncodedFormEntity(params));
-				}
+				((HttpPost) request).setEntity(httpEntity);
 			} else if (method.equals("PUT")) {
-				((HttpPut) request).setEntity(new UrlEncodedFormEntity(params));
+				((HttpPut) request).setEntity(httpEntity);
+			}
+		} catch (UnsupportedEncodingException e) {
+			setErrorMsg(e.getMessage());
+		}
+	}
+	
+	private void bindBody() {
+		if (body == null) {
+			return;
+		}
+		
+		String method = getMethod();
+		
+		try {
+			HttpEntity httpEntity = new StringEntity(body);
+			
+			if (method.equals("POST")) {
+				((HttpPost) request).setEntity(httpEntity);
+			} else if (method.equals("PUT")) {
+				((HttpPut) request).setEntity(httpEntity);
 			}
 		} catch (UnsupportedEncodingException e) {
 			setErrorMsg(e.getMessage());
