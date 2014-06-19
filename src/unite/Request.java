@@ -16,6 +16,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -143,7 +144,7 @@ public class Request {
 	}
 	
 	private boolean contentTypeIsJson() {
-		Header[] contentTypes = getHeaders("content-type");
+		Header[] contentTypes = getHeaders(HTTP.CONTENT_TYPE);
 		for (Header contentType : contentTypes) {
 			if (contentType.getValue().equals("application/json")) {
 				return true;
@@ -158,7 +159,7 @@ public class Request {
 			try {
 				jsonParams.accumulate(param.getName(), param.getValue());
 			} catch (JSONException e) {
-				
+				setErrorMsg(e.getMessage());
 			}
 		}
 		return jsonParams.toString();

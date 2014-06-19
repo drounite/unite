@@ -13,6 +13,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.os.AsyncTask;
 
@@ -49,6 +51,16 @@ public class Response {
 		}
 		
 		return errorMsg;
+	}
+	
+	public JSONObject getJsonContent() {
+		try {
+			return new JSONObject(getContent());
+		} catch (JSONException e) {
+			setErrorMsg(e.getMessage());
+		}
+		
+		return null;
 	}
 	
 	public int getStatusCode() {
