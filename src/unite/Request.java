@@ -14,7 +14,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Request {
 	
@@ -123,16 +126,42 @@ public class Request {
 	
 	private void bindParams() {
 		String method = getMethod();
-
+		
 		try {
 			if (method.equals("POST")) {
+				if (contentTypeIsJson()) {
+					((HttpPost) request).setEntity(new StringEntity(paramsToJsonString()));
+				} else {
 					((HttpPost) request).setEntity(new UrlEncodedFormEntity(params));
+				}
 			} else if (method.equals("PUT")) {
 				((HttpPut) request).setEntity(new UrlEncodedFormEntity(params));
 			}
 		} catch (UnsupportedEncodingException e) {
 			setErrorMsg(e.getMessage());
 		}
+	}
+	
+	private boolean contentTypeIsJson() {
+		Header[] contentTypes = getHeaders("content-type");
+		for (Header contentType : contentTypes) {
+			if (contentType.getValue().equals("application/json")) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private String paramsToJsonString() {
+		JSONObject jsonParams = new JSONObject();
+		for (NameValuePair param : params) {
+			try {
+				jsonParams.accumulate(param.getName(), param.getValue());
+			} catch (JSONException e) {
+				
+			}
+		}
+		return jsonParams.toString();
 	}
 	
 	private void setErrorMsg(String msg) {
