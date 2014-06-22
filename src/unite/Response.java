@@ -114,6 +114,10 @@ public class Response {
 		return content;
 	}
 	
+	public String getUri() {
+		return request.getURI().toString();
+	}
+	
 	private String streamToString(InputStream is) {
 		BufferedReader reader = 
 				new BufferedReader(new InputStreamReader(is));

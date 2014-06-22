@@ -11,12 +11,15 @@ import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -148,6 +151,14 @@ public class Request {
 				((HttpPost) request).setEntity(httpEntity);
 			} else if (method.equals("PUT")) {
 				((HttpPut) request).setEntity(httpEntity);
+			} else if (method.equals("GET")) {
+				String uri = ((HttpGet) request).getURI().toString();
+				String getParams = URLEncodedUtils.format(params, "UTF-8");
+				try {
+					((HttpGet) request).setURI(new URI(uri + "?" + getParams));
+				} catch (URISyntaxException e) {
+					setErrorMsg(e.getMessage());
+				}
 			}
 		} catch (UnsupportedEncodingException e) {
 			setErrorMsg(e.getMessage());
